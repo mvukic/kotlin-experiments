@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.0-Beta"
+    kotlin("jvm") version "1.9.0-RC"
     kotlin("plugin.serialization") version "1.8.21"
 }
 
@@ -12,9 +12,9 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    implementation(kotlinx("datetime:0.4.0"))
+    implementation(kotlinx("serialization-json:1.5.1"))
+    implementation(kotlinx("coroutines-core:1.7.1"))
     testImplementation(kotlin("test"))
 }
 
@@ -31,3 +31,6 @@ tasks {
         version = "8.1.1"
     }
 }
+
+fun DependencyHandler.kotlinx(module: String, version: String? = null): Any =
+    "org.jetbrains.kotlinx:kotlinx-$module${version?.let { ":$version" } ?: ""}"
