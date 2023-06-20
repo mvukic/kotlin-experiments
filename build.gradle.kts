@@ -18,19 +18,19 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
 kotlin {
     jvmToolchain(20)
 }
 
 tasks {
+    test {
+        useJUnitPlatform()
+    }
+
     wrapper {
         version = "8.2-rc-2"
     }
 }
 
-fun DependencyHandler.kotlinx(module: String, version: String? = null): Any =
+fun kotlinx(module: String, version: String? = null): Any =
     "org.jetbrains.kotlinx:kotlinx-$module${version?.let { ":$version" } ?: ""}"
