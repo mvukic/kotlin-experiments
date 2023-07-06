@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.9.0-RC"
-    kotlin("plugin.serialization") version "1.8.21"
+    kotlin("jvm") version "1.9.0"
+    kotlin("plugin.serialization") version "1.9.0"
 }
 
 group = "org.example"
@@ -14,7 +14,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlinx("datetime:0.4.0"))
     implementation(kotlinx("serialization-json:1.5.1"))
-    implementation(kotlinx("coroutines-core:1.7.1"))
+    implementation(kotlinx("coroutines-core:1.7.2"))
     testImplementation(kotlin("test"))
 }
 
