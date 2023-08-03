@@ -14,7 +14,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlinx("datetime:0.4.0"))
     implementation(kotlinx("serialization-json:1.5.1"))
-    implementation(kotlinx("coroutines-core:1.7.2"))
+    implementation(kotlinx("coroutines-core:1.7.3"))
     testImplementation(kotlin("test"))
 }
 
@@ -28,7 +28,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.2"
+        version = "8.3-rc-3"
     }
 }
 
