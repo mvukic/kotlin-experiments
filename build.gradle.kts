@@ -1,6 +1,8 @@
 plugins {
-    kotlin("jvm") version "1.9.0"
-    kotlin("plugin.serialization") version "1.9.0"
+    id("org.springframework.boot") version "3.2.0-M2"
+    id("io.spring.dependency-management") version "1.1.3"
+    kotlin("jvm") version "1.9.10"
+    kotlin("plugin.spring") version "1.9.10"
 }
 
 group = "org.example"
@@ -8,6 +10,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
 }
 
 dependencies {
@@ -15,7 +18,11 @@ dependencies {
     implementation(kotlinx("datetime:0.4.0"))
     implementation(kotlinx("serialization-json:1.5.1"))
     implementation(kotlinx("coroutines-core:1.7.3"))
-    testImplementation(kotlin("test"))
+
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+    implementation(kotlin("reflect"))
+    implementation(kotlinx("coroutines-reactor"))
 }
 
 kotlin {
@@ -28,7 +35,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.3-rc-3"
+        version = "8.3"
     }
 }
 

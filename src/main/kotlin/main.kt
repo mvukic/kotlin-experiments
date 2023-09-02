@@ -1,11 +1,9 @@
-enum class State {
-    START, STOP, END
-}
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
-fun main() {
-    println("main")
-    for (n in 2..<10) {
-        println(n)
-    }
-    println(State.entries)
+@SpringBootApplication
+class SpringBootApp
+
+fun main(args: Array<String>) {
+    runApplication<SpringBootApp>(*args)
 }
