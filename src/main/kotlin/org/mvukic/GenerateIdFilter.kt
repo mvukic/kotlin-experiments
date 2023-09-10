@@ -1,6 +1,8 @@
 package org.mvukic
 
 import io.klogging.java.LoggerFactory
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.withContext
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -8,6 +10,8 @@ import org.springframework.web.server.CoWebFilter
 import org.springframework.web.server.CoWebFilterChain
 import org.springframework.web.server.ServerWebExchange
 import java.util.*
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 
 //@Configuration
@@ -40,7 +44,9 @@ class RequestStartFilter : CoWebFilter() {
         val path = request.path.value()
         logger.info("RequestStartFilter {requestId}, {method}, {path}", requestId, method, path)
 
-        return chain.filter(exchange)
+        return withContext(coroutineContext + mapOf( "requestId" to requestId)) {
+            chain.filter(exchange)
+        }
     }
 }
 
@@ -52,13 +58,9 @@ class AuthenticationFilter : CoWebFilter() {
     private val logger = LoggerFactory.getLogger(AuthenticationFilter::class.java)
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
-        val user = /* get user from request */ User("user")
-
-        // Save user as an exchange attribute
+        val user = User("user")
         exchange.attributes["user"] = user
-
         logger.info("AuthenticationFilter {user}", user.name)
-
         return chain.filter(exchange)
     }
 }

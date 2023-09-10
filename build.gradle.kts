@@ -31,6 +31,7 @@ dependencies {
 
     implementation("io.klogging:klogging-jvm:0.5.6")
     implementation("io.klogging:klogging-spring-boot-starter:0.5.6")
+    implementation("org.springframework.boot:spring-boot-starter-security")
 
     implementation("org.springframework.boot:spring-boot-starter-webflux") {
         exclude(group = "ch.qos.logback")
