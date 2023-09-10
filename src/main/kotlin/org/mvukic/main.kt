@@ -3,6 +3,7 @@ package org.mvukic
 import io.klogging.Klogging
 import io.klogging.context.Context
 import io.klogging.context.withLogContext
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.reactor.ReactorContext
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -19,6 +20,8 @@ import kotlin.coroutines.coroutineContext
 @Service
 class RouterHandler : Klogging {
     suspend fun get(request: ServerRequest): ServerResponse {
+        val c = coroutineContext[CoroutineName.Key] as CoroutineName
+        logger.info(c.name)
         logger.info("test")
         return ServerResponse.ok().buildAndAwait()
     }
@@ -36,6 +39,9 @@ class RouterClass(private val handler: RouterHandler) {
 @SpringBootApplication
 class SpringBootApp
 
+
+https://github.com/spring-projects/spring-framework/issues/27522
+
 fun main(args: Array<String>) {
     // Always logged
     Context.addBaseContext(
@@ -49,7 +55,10 @@ fun main(args: Array<String>) {
         val requestId = ctx.context.getOrDefault<String>("requestId", null) ?: "Not found"
         // Get user (optional)
         val user = ctx.context.getOrDefault<User>("user", null)
-        mapOf("requestId" to requestId, "user" to (user?.name ?: "not found"))
+        mapOf(
+            "requestId" to requestId,
+            "user" to (user?.name ?: "not found")
+        )
     }
 
     runApplication<SpringBootApp>(*args)

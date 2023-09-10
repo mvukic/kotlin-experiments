@@ -44,7 +44,7 @@ class RequestStartFilter : CoWebFilter() {
         val path = request.path.value()
         logger.info("RequestStartFilter {requestId}, {method}, {path}", requestId, method, path)
 
-        return withContext(coroutineContext + mapOf( "requestId" to requestId)) {
+        return withContext(CoroutineName(requestId)) {
             chain.filter(exchange)
         }
     }
@@ -74,6 +74,8 @@ class RequestEndFilter : CoWebFilter() {
     private val logger = LoggerFactory.getLogger(RequestEndFilter::class.java)
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
+        val c = coroutineContext[CoroutineName.Key] as CoroutineName
+        logger.info(c.name)
         val requestId = exchange.getAttribute<String>("requestId")!!
         logger.info("RequestEndFilter {requestId} {user}", requestId)
         return chain.filter(exchange)
