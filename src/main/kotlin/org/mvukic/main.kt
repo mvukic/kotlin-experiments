@@ -1,29 +1,31 @@
 package org.mvukic
 
-import io.klogging.Klogging
 import io.klogging.context.Context
-import io.klogging.context.withLogContext
-import kotlinx.coroutines.CoroutineName
+import io.klogging.java.LoggerFactory
 import kotlinx.coroutines.reactor.ReactorContext
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.awaitBody
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
-import org.springframework.web.reactive.function.server.buildAndAwait
+import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.coRouter
-import kotlin.coroutines.coroutineContext
 
 
 @Service
-class RouterHandler : Klogging {
+class RouterHandler {
+
+    private val logger = LoggerFactory.getLogger(RouterHandler::class.java)
+    private val webClient = WebClient.builder().baseUrl("https://jsonplaceholder.typicode.com/todos/1").build()
+
     suspend fun get(request: ServerRequest): ServerResponse {
-        val c = coroutineContext[CoroutineName.Key] as CoroutineName
-        logger.info(c.name)
-        logger.info("test")
-        return ServerResponse.ok().buildAndAwait()
+        logger.info("get")
+        val response = webClient.get().retrieve().awaitBody<String>()
+        return ServerResponse.ok().bodyValueAndAwait(response)
     }
 }
 
@@ -40,7 +42,7 @@ class RouterClass(private val handler: RouterHandler) {
 class SpringBootApp
 
 
-https://github.com/spring-projects/spring-framework/issues/27522
+//https://github.com/spring-projects/spring-framework/issues/27522
 
 fun main(args: Array<String>) {
     // Always logged
@@ -50,15 +52,19 @@ fun main(args: Array<String>) {
     )
 
     // Always logged but dynamically fetched from the ReactorContext
-    Context.addContextItemExtractor(ReactorContext) { ctx ->
-        // Get request id
-        val requestId = ctx.context.getOrDefault<String>("requestId", null) ?: "Not found"
-        // Get user (optional)
-        val user = ctx.context.getOrDefault<User>("user", null)
-        mapOf(
-            "requestId" to requestId,
-            "user" to (user?.name ?: "not found")
-        )
+    Context.addContextItemExtractor(ReactorContext) {
+        mapOf()
+    }
+
+    Context.addContextItemExtractor(RequestIdCoroutineContext) {
+        mapOf()
+    }
+    Context.addContextItemExtractor(UserCoroutineContext) {
+        mapOf()
+    }
+
+    Context.addItemExtractor {
+        mapOf("test" to "value")
     }
 
     runApplication<SpringBootApp>(*args)

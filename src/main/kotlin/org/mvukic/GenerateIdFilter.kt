@@ -1,7 +1,7 @@
 package org.mvukic
 
+import io.klogging.context.withLogContext
 import io.klogging.java.LoggerFactory
-import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.withContext
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -24,6 +24,17 @@ import kotlin.coroutines.coroutineContext
 
 data class User(val name: String)
 
+class RequestIdCoroutineContext(val value: String) : CoroutineContext.Element {
+    override val key: CoroutineContext.Key<*> = Key
+    companion object Key : CoroutineContext.Key<RequestIdCoroutineContext>
+    override fun toString() = value
+}
+
+class UserCoroutineContext(val value: User) : CoroutineContext.Element {
+    override val key: CoroutineContext.Key<*> = Key
+    companion object Key : CoroutineContext.Key<UserCoroutineContext>
+    override fun toString() = value.name
+}
 
 // Generate id
 @Component
@@ -33,24 +44,16 @@ class RequestStartFilter : CoWebFilter() {
     private val logger = LoggerFactory.getLogger(RequestStartFilter::class.java)
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
-        val request = exchange.request
-
         val requestId = UUID.randomUUID().toString()
+        logger.info("RequestStartFilter '{requestId}'", requestId)
 
-        // Save id as an exchange attribute
-        exchange.attributes["requestId"] = requestId
-
-        val method = request.method.toString()
-        val path = request.path.value()
-        logger.info("RequestStartFilter {requestId}, {method}, {path}", requestId, method, path)
-
-        return withContext(CoroutineName(requestId)) {
+        // Save id into coroutine context
+        return withContext(coroutineContext + RequestIdCoroutineContext(requestId)) {
             chain.filter(exchange)
         }
     }
 }
 
-// Get and save user data
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 class AuthenticationFilter : CoWebFilter() {
@@ -58,15 +61,20 @@ class AuthenticationFilter : CoWebFilter() {
     private val logger = LoggerFactory.getLogger(AuthenticationFilter::class.java)
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
-        val user = User("user")
-        exchange.attributes["user"] = user
-        logger.info("AuthenticationFilter {user}", user.name)
-        return chain.filter(exchange)
+        val user = User("user name")
+
+        val context = exchange.attributes[COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
+        val requestId = context[RequestIdCoroutineContext]!!
+
+        logger.info("AuthenticationFilter '{requestId}' '{user}'", requestId, user.name)
+
+        // Save user into coroutine context
+        return withContext(coroutineContext + context + UserCoroutineContext(user)) {
+            chain.filter(exchange)
+        }
     }
 }
 
-
-// Log end request
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 class RequestEndFilter : CoWebFilter() {
@@ -74,10 +82,14 @@ class RequestEndFilter : CoWebFilter() {
     private val logger = LoggerFactory.getLogger(RequestEndFilter::class.java)
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
-        val c = coroutineContext[CoroutineName.Key] as CoroutineName
-        logger.info(c.name)
-        val requestId = exchange.getAttribute<String>("requestId")!!
-        logger.info("RequestEndFilter {requestId} {user}", requestId)
-        return chain.filter(exchange)
+        val context = exchange.attributes[COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
+
+        val requestId = context[RequestIdCoroutineContext]!!
+        val user = context[UserCoroutineContext]!!
+
+        logger.info("RequestEndFilter '{requestId}' '{user}'", requestId, user)
+        withContext(coroutineContext + context) {
+            chain.filter(exchange)
+        }
     }
 }
