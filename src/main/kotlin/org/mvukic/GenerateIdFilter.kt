@@ -1,75 +1,97 @@
 package org.mvukic
 
+import io.klogging.Klogging
 import io.klogging.context.withLogContext
-import io.klogging.java.LoggerFactory
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler
+import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.web.server.CoWebFilter
 import org.springframework.web.server.CoWebFilterChain
 import org.springframework.web.server.ServerWebExchange
+import reactor.core.publisher.Mono
 import java.util.*
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
-
-
-//@Configuration
-//@Order(Ordered.HIGHEST_PRECEDENCE)
-//class ErrorHandler : ErrorWebExceptionHandler {
-//    override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> {
-//        return Mono.empty()
-//    }
-//}
 
 data class User(val name: String)
 
-class RequestIdCoroutineContext(val value: String) : CoroutineContext.Element {
-    override val key: CoroutineContext.Key<*> = Key
-    companion object Key : CoroutineContext.Key<RequestIdCoroutineContext>
-    override fun toString() = value
-}
-
 class UserCoroutineContext(val value: User) : CoroutineContext.Element {
     override val key: CoroutineContext.Key<*> = Key
+
     companion object Key : CoroutineContext.Key<UserCoroutineContext>
-    override fun toString() = value.name
+
+    fun getLogContext() = arrayOf(
+        "user" to value.name
+    )
+
+}
+
+class RequestCoroutineContext(val id: String, val path: String, val method: String, val timestamp: Instant) : CoroutineContext.Element {
+    override val key: CoroutineContext.Key<*> = Key
+
+    companion object Key : CoroutineContext.Key<RequestCoroutineContext>
+
+
+    fun getLogContext() = arrayOf(
+        "requestId" to id, "path" to path, "method" to method
+    )
+
 }
 
 // Generate id
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-class RequestStartFilter : CoWebFilter() {
-
-    private val logger = LoggerFactory.getLogger(RequestStartFilter::class.java)
+class RequestStartFilter : CoWebFilter(), Klogging {
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
-        val requestId = UUID.randomUUID().toString()
-        logger.info("RequestStartFilter '{requestId}'", requestId)
+        val requestCtx = RequestCoroutineContext(
+            id = UUID.randomUUID().toString(),
+            path = exchange.request.path.toString(),
+            method = exchange.request.method.toString(),
+            timestamp = Clock.System.now()
+        )
 
-        // Save id into coroutine context
-        return withContext(coroutineContext + RequestIdCoroutineContext(requestId)) {
+        withLogContext(*requestCtx.getLogContext()) {
+            logger.info("RequestStartFilter")
+        }
+
+        withContext(requestCtx) {
             chain.filter(exchange)
         }
     }
 }
 
-@Component
+@Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
-class AuthenticationFilter : CoWebFilter() {
+class ErrorHandler : ErrorWebExceptionHandler {
+    override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> {
+        val requestCtx = exchange.getContextElement(RequestCoroutineContext)
+        val userCtx = exchange.getContextElement(UserCoroutineContext)
+        println(requestCtx)
+        println(userCtx)
+        return Mono.empty()
+    }
+}
 
-    private val logger = LoggerFactory.getLogger(AuthenticationFilter::class.java)
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE + 2)
+class AuthenticationFilter : CoWebFilter(), Klogging {
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
         val user = User("user name")
 
-        val context = exchange.attributes[COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
-        val requestId = context[RequestIdCoroutineContext]!!
+        val requestCtx = exchange.getContextElement(RequestCoroutineContext)!!
+        val userCtx = UserCoroutineContext(user)
 
-        logger.info("AuthenticationFilter '{requestId}' '{user}'", requestId, user.name)
+        withLogContext(*(requestCtx.getLogContext() + userCtx.getLogContext())) {
+            logger.info("AuthenticationFilter")
+        }
 
-        // Save user into coroutine context
-        return withContext(coroutineContext + context + UserCoroutineContext(user)) {
+        withContext(requestCtx + userCtx) {
             chain.filter(exchange)
         }
     }
@@ -77,19 +99,25 @@ class AuthenticationFilter : CoWebFilter() {
 
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
-class RequestEndFilter : CoWebFilter() {
-
-    private val logger = LoggerFactory.getLogger(RequestEndFilter::class.java)
+class RequestEndFilter : CoWebFilter(), Klogging {
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
-        val context = exchange.attributes[COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
 
-        val requestId = context[RequestIdCoroutineContext]!!
-        val user = context[UserCoroutineContext]!!
+        val requestCtx = exchange.getContextElement(RequestCoroutineContext)!!
+        val userCtx = exchange.getContextElement(UserCoroutineContext)!!
 
-        logger.info("RequestEndFilter '{requestId}' '{user}'", requestId, user)
-        withContext(coroutineContext + context) {
-            chain.filter(exchange)
+        val duration = (Clock.System.now() - requestCtx.timestamp).inWholeNanoseconds
+        withLogContext(*(requestCtx.getLogContext() + userCtx.getLogContext() + arrayOf("duration" to duration.toString()))) {
+            logger.info("RequestEndFilter")
         }
+        chain.filter(exchange)
     }
+}
+
+fun ServerWebExchange.getContext(): CoroutineContext {
+    return attributes[CoWebFilter.COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
+}
+
+fun <T : CoroutineContext.Element> ServerWebExchange.getContextElement(key: CoroutineContext.Key<T>): T? {
+    return getContext()[key]
 }

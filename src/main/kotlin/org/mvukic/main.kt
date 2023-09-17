@@ -1,8 +1,8 @@
 package org.mvukic
 
+import io.klogging.Klogging
 import io.klogging.context.Context
-import io.klogging.java.LoggerFactory
-import kotlinx.coroutines.reactor.ReactorContext
+import io.klogging.context.withLogContext
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
@@ -17,24 +17,36 @@ import org.springframework.web.reactive.function.server.coRouter
 
 
 @Service
-class RouterHandler {
-
-    private val logger = LoggerFactory.getLogger(RouterHandler::class.java)
+class RouterHandler : Klogging {
     private val webClient = WebClient.builder().baseUrl("https://jsonplaceholder.typicode.com/todos/1").build()
 
     suspend fun get(request: ServerRequest): ServerResponse {
-        logger.info("get")
+        error("test")
+        logger.info("get before call")
         val response = webClient.get().retrieve().awaitBody<String>()
+        logger.info("get after call")
         return ServerResponse.ok().bodyValueAndAwait(response)
     }
 }
 
 @Configuration
-class RouterClass(private val handler: RouterHandler) {
+class RouterClass(private val handler: RouterHandler) : Klogging {
 
     @Bean
     fun routerFn() = coRouter {
-        GET("get", handler::get)
+        filter { request, fn ->
+            logger.info("RouterClass")
+            fn(request)
+        }
+
+        GET("get") {
+//            val requestCtx = it.exchange().getContextElement(RequestCoroutineContext)!!
+//            val userCtx = it.exchange().getContextElement(UserCoroutineContext)!!
+//            withLogContext(*(requestCtx.getLogContext() + userCtx.getLogContext())) {
+                handler.get(it)
+//            }
+
+        }
     }
 }
 
@@ -45,27 +57,9 @@ class SpringBootApp
 //https://github.com/spring-projects/spring-framework/issues/27522
 
 fun main(args: Array<String>) {
-    // Always logged
     Context.addBaseContext(
         "app" to "LoggingDemo",
         "version" to "1.2.0"
     )
-
-    // Always logged but dynamically fetched from the ReactorContext
-    Context.addContextItemExtractor(ReactorContext) {
-        mapOf()
-    }
-
-    Context.addContextItemExtractor(RequestIdCoroutineContext) {
-        mapOf()
-    }
-    Context.addContextItemExtractor(UserCoroutineContext) {
-        mapOf()
-    }
-
-    Context.addItemExtractor {
-        mapOf("test" to "value")
-    }
-
     runApplication<SpringBootApp>(*args)
 }
