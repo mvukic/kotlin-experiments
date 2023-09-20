@@ -1,56 +1,35 @@
 package org.mvukic
 
-import io.klogging.Klogging
+import io.klogging.Level
+import io.klogging.config.loggingConfiguration
 import io.klogging.context.Context
+import io.klogging.rendering.RENDER_ANSI
+import io.klogging.sending.STDOUT
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.awaitBody
-import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.reactive.function.server.ServerResponse
-import org.springframework.web.reactive.function.server.bodyValueAndAwait
-import org.springframework.web.reactive.function.server.coRouter
-
-
-@Service
-class RouterHandler : Klogging {
-    private val webClient = WebClient.builder().baseUrl("https://jsonplaceholder.typicode.com/todos/1").build()
-
-    suspend fun get(request: ServerRequest): ServerResponse {
-        logger.info("get before call")
-        val response = webClient.get().retrieve().awaitBody<String>()
-        logger.info("get after call")
-        return ServerResponse.ok().bodyValueAndAwait(response)
-    }
-
-    suspend fun error(request: ServerRequest): ServerResponse {
-        error("some error")
-    }
-}
-
-@Configuration
-class RouterClass(private val handler: RouterHandler) : Klogging {
-
-    @Bean
-    fun routerFn() = coRouter {
-        GET("get") { runWithLoggingContext(it, handler::get) }
-        GET("error") { runWithLoggingContext(it, handler::error) }
-    }
-}
-
-@SpringBootApplication
-class SpringBootApp
 
 
 //https://github.com/spring-projects/spring-framework/issues/27522
 
+@SpringBootApplication
+class SpringBootApp
+
 fun main(args: Array<String>) {
+    configureLogging()
+    runApplication<SpringBootApp>(*args)
+}
+
+fun configureLogging() {
+    loggingConfiguration {
+        sink("stdout", RENDER_ANSI, STDOUT)
+        logging {
+            fromMinLevel(Level.INFO) {
+                toSink("stdout")
+            }
+        }
+    }
     Context.addBaseContext(
         "app" to "LoggingDemo",
         "version" to "1.2.0"
     )
-    runApplication<SpringBootApp>(*args)
 }

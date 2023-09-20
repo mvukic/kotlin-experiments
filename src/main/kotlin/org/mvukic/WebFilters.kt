@@ -2,6 +2,7 @@ package org.mvukic
 
 import io.klogging.Klogging
 import io.klogging.context.withLogContext
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -21,30 +22,6 @@ import java.time.Clock
 import java.util.*
 
 
-@Configuration
-@Order(WebFilterOrders.ERROR)
-class ErrorHandler : ErrorWebExceptionHandler, Klogging {
-    override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> {
-
-        val requestAttributes = exchange.attributes[RequestAttributes.KEY] as RequestAttributes
-
-        val error = Json.encodeToString(ErrorResponse("error")).encodeToByteArray()
-        exchange.response.headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        exchange.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
-
-        val dataBuffer = exchange.response.bufferFactory()
-        return mono {
-            withLogContext(*requestAttributes.getLogContext()) {
-                logger.error("ERROR")
-            }
-            exchange.response.writeWith(dataBuffer.wrap(error).toMono())
-            null
-        }
-    }
-}
-
-
-// Generate id
 @Component
 @Order(WebFilterOrders.START)
 class RequestStartFilter : CoWebFilter(), Klogging {
@@ -54,7 +31,8 @@ class RequestStartFilter : CoWebFilter(), Klogging {
             id = UUID.randomUUID().toString(),
             path = exchange.request.path.toString(),
             method = exchange.request.method.toString(),
-            timestamp = Clock.systemUTC().instant().toEpochMilli()
+            timestamp = Clock.systemUTC().instant().toEpochMilli(),
+            user = null
         )
 
         withLogContext(*requestAttributes.getLogContext()) {
@@ -66,7 +44,6 @@ class RequestStartFilter : CoWebFilter(), Klogging {
     }
 }
 
-// Log end request
 @Component
 @Order(WebFilterOrders.END)
 class RequestEndFilter : CoWebFilter(), Klogging {
