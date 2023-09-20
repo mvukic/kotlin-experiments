@@ -2,7 +2,6 @@ package org.mvukic
 
 import io.klogging.Klogging
 import io.klogging.context.Context
-import io.klogging.context.withLogContext
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
@@ -21,11 +20,14 @@ class RouterHandler : Klogging {
     private val webClient = WebClient.builder().baseUrl("https://jsonplaceholder.typicode.com/todos/1").build()
 
     suspend fun get(request: ServerRequest): ServerResponse {
-        error("test")
         logger.info("get before call")
         val response = webClient.get().retrieve().awaitBody<String>()
         logger.info("get after call")
         return ServerResponse.ok().bodyValueAndAwait(response)
+    }
+
+    suspend fun error(request: ServerRequest): ServerResponse {
+        error("some error")
     }
 }
 
@@ -34,19 +36,8 @@ class RouterClass(private val handler: RouterHandler) : Klogging {
 
     @Bean
     fun routerFn() = coRouter {
-        filter { request, fn ->
-            logger.info("RouterClass")
-            fn(request)
-        }
-
-        GET("get") {
-//            val requestCtx = it.exchange().getContextElement(RequestCoroutineContext)!!
-//            val userCtx = it.exchange().getContextElement(UserCoroutineContext)!!
-//            withLogContext(*(requestCtx.getLogContext() + userCtx.getLogContext())) {
-                handler.get(it)
-//            }
-
-        }
+        GET("get") { runWithLoggingContext(it, handler::get) }
+        GET("error") { runWithLoggingContext(it, handler::error) }
     }
 }
 
