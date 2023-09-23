@@ -5,6 +5,7 @@ import io.klogging.config.loggingConfiguration
 import io.klogging.context.Context
 import io.klogging.rendering.RENDER_ANSI
 import io.klogging.rendering.RENDER_CLEF
+import io.klogging.rendering.RENDER_ISO8601
 import io.klogging.sending.STDOUT
 import io.klogging.slf4j.KloggingServiceProvider
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -23,7 +24,7 @@ fun main(args: Array<String>) {
 
 fun configureLogging() {
     loggingConfiguration {
-        sink("stdout", RENDER_CLEF, STDOUT)
+        sink("stdout", RENDER_ANSI, STDOUT)
         logging {
             fromMinLevel(Level.INFO) {
                 toSink("stdout")
