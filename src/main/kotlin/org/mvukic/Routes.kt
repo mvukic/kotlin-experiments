@@ -14,13 +14,21 @@ import org.springframework.web.reactive.function.server.coRouter
 
 @Service
 class RouterHandler : Klogging {
-    private val webClient = WebClient.builder().baseUrl("https://jsonplaceholder.typicode.com/todos/1").build()
 
-    suspend fun get(request: ServerRequest): ServerResponse {
+    suspend fun get1(request: ServerRequest): ServerResponse {
+        val webClient = WebClient.builder().baseUrl("https://jsonplaceholder.typicode.com/todos/1").build()
         logger.info("get before call")
         val response = webClient.get().retrieve().awaitBody<String>()
         logger.info("get after call")
         return ServerResponse.ok().bodyValueAndAwait(response)
+    }
+
+    suspend fun get2(request: ServerRequest): ServerResponse {
+        val restClient = RestClient.builder().baseUrl("https://jsonplaceholder.typicode.com/todos/1").build()
+        logger.info("get before call")
+        val response: String? = restClient.get().retrieve().body(String::class.java)
+        logger.info("get after call")
+        return ServerResponse.ok().bodyValueAndAwait(response ?: "")
     }
 
     suspend fun error(request: ServerRequest): ServerResponse {
@@ -33,7 +41,11 @@ class RouterClass(private val handler: RouterHandler) : Klogging {
 
     @Bean
     fun routerFn() = coRouter {
-        GET("get") { runWithLoggingContext(it, handler::get) }
-        GET("error") { runWithLoggingContext(it, handler::error) }
+
+        filter { request, handleFn -> runWithLoggingContext(request, handleFn) }
+
+        GET("get1", handler::get1)
+        GET("get2", handler::get2)
+        GET("error", handler::error)
     }
 }
