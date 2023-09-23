@@ -3,16 +3,16 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("org.springframework.boot") version "3.2.0-SNAPSHOT"
     id("io.spring.dependency-management") version "1.1.3"
-    kotlin("jvm") version "1.9.20-Beta"
-    kotlin("plugin.spring") version "1.9.20-Beta"
-    kotlin("plugin.serialization") version "1.9.20-Beta"
+    kotlin("jvm") version "1.9.20-Beta2"
+    kotlin("plugin.spring") version "1.9.20-Beta2"
+    kotlin("plugin.serialization") version "1.9.20-Beta2"
 }
 
-group = "org.example"
+group = "org.mvukic"
 version = "1.0-SNAPSHOT"
 
 kotlin {
-    jvmToolchain(20)
+    jvmToolchain(21)
 }
 
 repositories {
@@ -30,10 +30,10 @@ configurations {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation(kotlinx("datetime:0.4.0"))
+    implementation(kotlinx("datetime:0.4.1"))
     implementation(kotlinx("serialization-json:1.6.0"))
-    implementation(kotlinx("coroutines-core"))
-    implementation(kotlinx("coroutines-reactor"))
+    implementation(kotlinx("coroutines-core:1.7.3"))
+    implementation(kotlinx("coroutines-reactor:1.7.3"))
 
     implementation("io.klogging:klogging-spring-boot-starter:0.5.6")
 //    implementation("org.springframework.boot:spring-boot-starter-security")
@@ -48,13 +48,13 @@ tasks {
     }
 
     wrapper {
-        version = "8.3"
+        version = "8.4-rc-1"
     }
 
     compileKotlin {
         compilerOptions {
             freeCompilerArgs.set(listOf("-Xjsr305=strict"))
-            jvmTarget.set(JvmTarget.JVM_20)
+            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
 }

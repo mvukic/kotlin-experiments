@@ -1,7 +1,8 @@
 package org.mvukic
 
-import io.klogging.NoCoLogging
+import io.klogging.Klogging
 import io.klogging.context.withLogContext
+import kotlinx.coroutines.reactor.mono
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -25,7 +26,7 @@ data class ErrorResponse(
 
 @Configuration
 @Order(WebFilterOrders.ERROR)
-class ErrorHandler : ErrorWebExceptionHandler, NoCoLogging {
+class ErrorHandler : ErrorWebExceptionHandler, Klogging {
 
     override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> {
 
@@ -37,11 +38,14 @@ class ErrorHandler : ErrorWebExceptionHandler, NoCoLogging {
 
         val dataBuffer = exchange.response.bufferFactory()
 
-//        withLogContext("requestId" to requestAttributes.id) {
-            logger.error(ex, "ERROR")
-//        }
-        exchange.response.writeWith(dataBuffer.wrap(error).toMono())
-        return Mono.empty()
+
+        val log = mono {
+            withLogContext("requestId" to requestAttributes.id) {
+                logger.error(ex, "ERROR")
+            }
+        }
+
+        return exchange.response.writeWith(dataBuffer.wrap(error).toMono()).then(Mono.defer { log }).then()
     }
 
 }
