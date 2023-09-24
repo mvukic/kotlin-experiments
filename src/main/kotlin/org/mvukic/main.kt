@@ -3,6 +3,7 @@ package org.mvukic
 import io.klogging.Level
 import io.klogging.config.loggingConfiguration
 import io.klogging.context.Context
+import io.klogging.events.LogEvent
 import io.klogging.rendering.*
 import io.klogging.sending.STDOUT
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -20,11 +21,17 @@ fun main(args: Array<String>) {
 }
 
 private fun configureLogging() {
+    val renderCustom: RenderString = { e: LogEvent ->
+        val eventMap: MutableMap<String, Any?> = (mapOf("@t" to e.timestamp.toString()) + e.items).toMutableMap()
+        if (e.context != null) eventMap["context"] = e.context
+        if (e.template != null) eventMap["@mt"] = e.template else eventMap["@m"] = e.message
+        serializeMap(eventMap)
+    }
     val env = getEnv()
     loggingConfiguration {
         sink("local", RENDER_ANSI, STDOUT)
         sink("dev", RENDER_ISO8601, STDOUT)
-        sink("test", RENDER_CLEF, STDOUT)
+        sink("test", renderCustom, STDOUT)
         sink("stage", RENDER_ECS, STDOUT)
         sink("prod", RENDER_GELF, STDOUT)
         logging {
