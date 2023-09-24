@@ -37,7 +37,7 @@ class RouterHandler : Klogging {
 }
 
 @Configuration
-class RouterClass(private val handler: RouterHandler) : Klogging {
+class RouterClass(private val handler: RouterHandler) {
 
     @Bean
     fun routerFn() = coRouter {
