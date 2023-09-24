@@ -23,10 +23,10 @@ fun main(args: Array<String>) {
 private fun configureLogging() {
     val renderCustom: RenderString = { e: LogEvent ->
         val eventMap: MutableMap<String, Any?> = (mapOf("@t" to e.timestamp.toString()) + e.items).toMutableMap()
-        if (e.context != null) eventMap["context"] = e.context
         if (e.template != null) eventMap["@mt"] = e.template else eventMap["@m"] = e.message
         serializeMap(eventMap)
     }
+
     val env = getEnv()
     loggingConfiguration {
         sink("local", RENDER_ANSI, STDOUT)
