@@ -42,7 +42,7 @@ class RouterClass(private val handler: RouterHandler) {
     @Bean
     fun routerFn() = coRouter {
 
-        filter { request, handleFn -> runWithLoggingContext(request, handleFn) }
+        filter(::runWithLoggingContext)
 
         GET("get1", handler::get1)
         GET("get2", handler::get2)

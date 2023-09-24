@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Stage" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="stage" />
+    <module name="kotlin-experiments.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="org.mvukic.SpringBootApp" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

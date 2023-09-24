@@ -2,24 +2,14 @@ package org.mvukic
 
 import io.klogging.Klogging
 import io.klogging.context.withLogContext
-import kotlinx.coroutines.reactor.awaitSingleOrNull
-import kotlinx.coroutines.reactor.mono
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler
-import org.springframework.context.annotation.Configuration
+import kotlinx.coroutines.withContext
 import org.springframework.core.annotation.Order
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.server.CoWebFilter
 import org.springframework.web.server.CoWebFilterChain
 import org.springframework.web.server.ServerWebExchange
-import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toMono
 import java.time.Clock
-import java.util.*
+import kotlin.coroutines.CoroutineContext
 
 
 @Component
@@ -27,20 +17,20 @@ import java.util.*
 class RequestStartFilter : CoWebFilter(), Klogging {
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
-        val requestAttributes = RequestAttributes(
-            id = UUID.randomUUID().toString(),
-            path = exchange.request.path.toString(),
-            method = exchange.request.method.toString(),
-            timestamp = Clock.systemUTC().instant().toEpochMilli(),
-            user = null
-        )
+        val requestAttributes = RequestAttributes.fromExchange(exchange)
+
+        /* Exchange attribute */
+        exchange.attributes[RequestAttributes.KEY] = requestAttributes
 
         withLogContext(*requestAttributes.getLogContext()) {
             logger.info("RequestStartFilter")
         }
 
-        exchange.attributes[RequestAttributes.KEY] = requestAttributes
-        chain.filter(exchange)
+        /* Coroutine context */
+        val requestAttributesCoroutineContext = RequestAttributesCoroutineContext(requestAttributes)
+        withContext(requestAttributesCoroutineContext) {
+            chain.filter(exchange)
+        }
     }
 }
 
@@ -49,15 +39,27 @@ class RequestStartFilter : CoWebFilter(), Klogging {
 class RequestEndFilter : CoWebFilter(), Klogging {
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
-
+        /* Exchange attribute */
         val requestAttributes = exchange.attributes[RequestAttributes.KEY] as RequestAttributes
-
         val duration = Clock.systemUTC().instant().toEpochMilli() - requestAttributes.timestamp
-        val logContext = requestAttributes.getLogContext() + arrayOf("duration" to duration.toString())
 
-        withLogContext(*logContext) {
+        withLogContext("requestId" to requestAttributes.id, "duration" to duration.toString()) {
             logger.info("RequestEndFilter")
         }
-        chain.filter(exchange)
+
+        /* Coroutine context */
+        val coroutineContext = exchange.attributes[COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
+        val requestAttributesCoroutineContext = coroutineContext[RequestAttributesCoroutineContext]!!
+
+        withLogContext(
+            "requestId" to requestAttributesCoroutineContext.requestAttributes.id,
+            "duration" to duration.toString()
+        ) {
+            logger.info("RequestEndFilter")
+        }
+
+        withContext(requestAttributesCoroutineContext) {
+            chain.filter(exchange)
+        }
     }
 }

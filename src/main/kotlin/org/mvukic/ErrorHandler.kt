@@ -13,15 +13,21 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.web.server.CoWebFilter
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
+import kotlin.coroutines.CoroutineContext
 
 
 @Serializable
 data class ErrorResponse(
     @SerialName("description")
-    val description: String
+    val description: String,
+
+    @SerialName("requestId")
+    val requestId: String
+
 )
 
 @Configuration
@@ -30,22 +36,33 @@ class ErrorHandler : ErrorWebExceptionHandler, Klogging {
 
     override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> {
 
+        /* Coroutine context */
+        val coroutineContext = exchange.attributes[CoWebFilter.COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
+        val requestAttributesCoroutineContext = coroutineContext[RequestAttributesCoroutineContext]!!
+
+
+        val log1 = mono {
+            withLogContext("requestId" to requestAttributesCoroutineContext.requestAttributes.id) {
+                logger.error(ex, "ERROR")
+            }
+        }
+
+        /* Exchange attribute */
         val requestAttributes = exchange.attributes[RequestAttributes.KEY] as RequestAttributes
 
-        val error = Json.encodeToString(ErrorResponse("error")).encodeToByteArray()
-        exchange.response.headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        exchange.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
-
-        val dataBuffer = exchange.response.bufferFactory()
-
-
-        val log = mono {
+        val log2 = mono {
             withLogContext("requestId" to requestAttributes.id) {
                 logger.error(ex, "ERROR")
             }
         }
 
-        return exchange.response.writeWith(dataBuffer.wrap(error).toMono()).then(Mono.defer { log }).then()
+        val error = Json.encodeToString(ErrorResponse("error", requestAttributes.id)).encodeToByteArray()
+        exchange.response.headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        exchange.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
+
+
+        val dataBuffer = exchange.response.bufferFactory()
+        return log1.then(log2).then(exchange.response.writeWith(dataBuffer.wrap(error).toMono()))
     }
 
 }

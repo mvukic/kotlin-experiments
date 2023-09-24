@@ -3,11 +3,8 @@ package org.mvukic
 import io.klogging.Level
 import io.klogging.config.loggingConfiguration
 import io.klogging.context.Context
-import io.klogging.rendering.RENDER_ANSI
-import io.klogging.rendering.RENDER_CLEF
-import io.klogging.rendering.RENDER_ISO8601
+import io.klogging.rendering.*
 import io.klogging.sending.STDOUT
-import io.klogging.slf4j.KloggingServiceProvider
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
@@ -22,17 +19,29 @@ fun main(args: Array<String>) {
     runApplication<SpringBootApp>(*args)
 }
 
-fun configureLogging() {
+private fun configureLogging() {
+    val env = getEnv()
     loggingConfiguration {
-        sink("stdout", RENDER_ANSI, STDOUT)
+        sink("local", RENDER_ANSI, STDOUT)
+        sink("dev", RENDER_ISO8601, STDOUT)
+        sink("test", RENDER_CLEF, STDOUT)
+        sink("stage", RENDER_ECS, STDOUT)
+        sink("prod", RENDER_GELF, STDOUT)
         logging {
             fromMinLevel(Level.INFO) {
-                toSink("stdout")
+                toSink(env)
             }
         }
     }
     Context.addBaseContext(
         "app" to "LoggingDemo",
-        "version" to "1.2.0"
+        "version" to "1.2.0",
+        "env" to env
     )
+}
+
+private fun getEnv(): String {
+    val envs = listOf("local", "dev", "test", "stage", "prod")
+    val env = System.getProperty("spring.profiles.active", "local")
+    return if (env in envs) env else "local"
 }

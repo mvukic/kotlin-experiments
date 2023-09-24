@@ -36,7 +36,6 @@ dependencies {
     implementation(kotlinx("coroutines-reactor:1.7.3"))
 
     implementation("io.klogging:klogging-spring-boot-starter:0.5.6")
-//    implementation("org.springframework.boot:spring-boot-starter-security")
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -53,11 +52,11 @@ tasks {
 
     compileKotlin {
         compilerOptions {
-            freeCompilerArgs.set(listOf("-Xjsr305=strict"))
-            jvmTarget.set(JvmTarget.JVM_21)
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = JvmTarget.JVM_21
         }
     }
 }
 
-fun kotlinx(module: String, version: String? = null): Any =
+fun kotlinx(module: String, version: String? = null) =
     "org.jetbrains.kotlinx:kotlinx-$module${version?.let { ":$version" } ?: ""}"
