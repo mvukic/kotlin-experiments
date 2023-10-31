@@ -3,9 +3,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("org.springframework.boot") version "3.2.0-RC1"
     id("io.spring.dependency-management") version "1.1.3"
-    kotlin("jvm") version "1.9.20-RC"
-    kotlin("plugin.spring") version "1.9.20-RC"
-    kotlin("plugin.serialization") version "1.9.20-RC"
+    kotlin("jvm") version "1.9.20-RC2"
+    kotlin("plugin.spring") version "1.9.20-RC2"
+    kotlin("plugin.serialization") version "1.9.20-RC2"
 }
 
 group = "org.mvukic"
@@ -35,6 +35,8 @@ dependencies {
     implementation(kotlinx("coroutines-reactor:1.7.3"))
 
     implementation("io.klogging:klogging-spring-boot-starter:0.5.6")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")

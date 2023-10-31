@@ -8,11 +8,13 @@ import io.klogging.rendering.*
 import io.klogging.sending.STDOUT
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.cache.annotation.EnableCaching
 
 
 // https://github.com/spring-projects/spring-framework/issues/27522
 // https://github.com/sdeleuze/spring-framework/commit/gh-26977
 @SpringBootApplication
+@EnableCaching
 class SpringBootApp
 
 fun main(args: Array<String>) {
