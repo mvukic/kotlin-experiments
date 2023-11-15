@@ -1,11 +1,11 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.2.0-RC1"
-    id("io.spring.dependency-management") version "1.1.3"
-    kotlin("jvm") version "1.9.20-RC2"
-    kotlin("plugin.spring") version "1.9.20-RC2"
-    kotlin("plugin.serialization") version "1.9.20-RC2"
+    id("org.springframework.boot") version "3.2.0-RC2"
+    id("io.spring.dependency-management") version "1.1.4"
+    kotlin("jvm") version "2.0.0-Beta1"
+    kotlin("plugin.spring") version "2.0.0-Beta1"
+    kotlin("plugin.serialization") version "2.0.0-Beta1"
 }
 
 group = "org.mvukic"
@@ -30,7 +30,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation(kotlinx("datetime:0.4.1"))
-    implementation(kotlinx("serialization-json:1.6.0"))
+    implementation(kotlinx("serialization-json:1.6.1"))
     implementation(kotlinx("coroutines-core:1.7.3"))
     implementation(kotlinx("coroutines-reactor:1.7.3"))
 
@@ -48,7 +48,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.4"
+        version = "8.5-rc-2"
     }
 
     compileKotlin {
