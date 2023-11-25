@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.2.0-RC2"
+    id("org.springframework.boot") version "3.2.0"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "2.0.0-Beta1"
     kotlin("plugin.spring") version "2.0.0-Beta1"
@@ -17,7 +17,6 @@ kotlin {
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://repo.spring.io/milestone") }
 }
 
 configurations {
@@ -48,7 +47,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.5-rc-2"
+        version = "8.5-rc-4"
     }
 
     compileKotlin {
