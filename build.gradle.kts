@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.2.0"
+    id("org.springframework.boot") version "3.2.1-SNAPSHOT"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "2.0.0-Beta1"
     kotlin("plugin.spring") version "2.0.0-Beta1"
@@ -17,6 +17,8 @@ kotlin {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
+    maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
 configurations {
@@ -29,11 +31,11 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation(kotlinx("datetime:0.4.1"))
-    implementation(kotlinx("serialization-json:1.6.1"))
-    implementation(kotlinx("coroutines-core:1.7.3"))
-    implementation(kotlinx("coroutines-reactor:1.7.3"))
+    implementation(kotlinx("serialization-json:1.6.2"))
+    implementation(kotlinx("coroutines-core:1.8.0-RC"))
+    implementation(kotlinx("coroutines-reactor:1.8.0-RC"))
 
-    implementation("io.klogging:klogging-spring-boot-starter:0.5.6")
+    implementation("io.klogging:klogging-spring-boot-starter:0.5.7")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
@@ -47,7 +49,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.5-rc-4"
+        version = "8.5"
     }
 
     compileKotlin {
