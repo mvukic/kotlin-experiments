@@ -10,13 +10,12 @@ import org.springframework.web.reactive.function.client.awaitBody
 
 @Service
 class ApiService(
-    private val cacheManager: CacheManager
+    cacheManager: CacheManager
 ) : Klogging {
 
     private val api1Cache = cacheManager.getCache("api_1")
     private val api2Cache = cacheManager.getCache("api_2")
 
-    //    @Cacheable(value = ["api_"], key = "id")
     suspend fun api1(id: String): String {
         api1Cache?.get("id", String::class.java)?.let {
             return it
@@ -30,7 +29,6 @@ class ApiService(
         return response
     }
 
-    //    @Cacheable(value = ["api_2"], key = "id")
     suspend fun api2(id: String): String? {
         api2Cache?.get("id", String::class.java)?.let {
             return it

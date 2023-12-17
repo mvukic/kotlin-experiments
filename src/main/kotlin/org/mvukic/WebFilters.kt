@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.server.CoWebFilter
 import org.springframework.web.server.CoWebFilterChain
 import org.springframework.web.server.ServerWebExchange
-import java.time.Clock
 import kotlin.coroutines.CoroutineContext
 
 
@@ -17,19 +16,16 @@ import kotlin.coroutines.CoroutineContext
 class RequestStartFilter : CoWebFilter(), Klogging {
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
+        // Create request attributes
         val requestAttributes = RequestAttributes.fromExchange(exchange)
-
-        /* Exchange attribute */
-        exchange.attributes[RequestAttributes.KEY] = requestAttributes
-
-        withLogContext(*requestAttributes.getLogContext()) {
-            logger.info("RequestStartFilter")
-        }
-
-        /* Coroutine context */
+        // Create request attributes coroutine context
         val requestAttributesCoroutineContext = RequestAttributesCoroutineContext(requestAttributes)
+
         withContext(requestAttributesCoroutineContext) {
-            chain.filter(exchange)
+            withLogContext(*requestAttributes.getLogContext()) {
+                logger.info("START")
+                chain.filter(exchange)
+            }
         }
     }
 }
@@ -39,26 +35,13 @@ class RequestStartFilter : CoWebFilter(), Klogging {
 class RequestEndFilter : CoWebFilter(), Klogging {
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
-        /* Exchange attribute */
-        val requestAttributes = exchange.attributes[RequestAttributes.KEY] as RequestAttributes
-        val duration = Clock.systemUTC().instant().toEpochMilli() - requestAttributes.timestamp
-
-        withLogContext("requestId" to requestAttributes.id, "duration" to duration.toString()) {
-            logger.info("RequestEndFilter")
-        }
-
-        /* Coroutine context */
-        val coroutineContext = exchange.attributes[COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
+        /* Get coroutine context */
+        val coroutineContext = exchange.attributes[CoWebFilter.COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
+        /* Get request attribute coroutine context */
         val requestAttributesCoroutineContext = coroutineContext[RequestAttributesCoroutineContext]!!
 
-        withLogContext(
-            "requestId" to requestAttributesCoroutineContext.requestAttributes.id,
-            "duration" to duration.toString()
-        ) {
-            logger.info("RequestEndFilter")
-        }
-
-        withContext(requestAttributesCoroutineContext) {
+        withLogContext("id" to requestAttributesCoroutineContext.requestAttributes.id) {
+            logger.info("END")
             chain.filter(exchange)
         }
     }

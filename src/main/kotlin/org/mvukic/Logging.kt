@@ -1,14 +1,13 @@
 package org.mvukic
 
-import io.klogging.context.withLogContext
+import io.klogging.context.logContext
 import org.springframework.core.Ordered
 import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.reactive.function.server.ServerResponse
-import org.springframework.web.server.CoWebFilter
 import org.springframework.web.server.ServerWebExchange
 import java.time.Clock
 import java.util.*
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 object WebFilterOrders {
     const val ERROR = Ordered.HIGHEST_PRECEDENCE
@@ -34,8 +33,6 @@ data class RequestAttributes(
     fun getLogContext() = arrayOf("requestId" to id, "path" to path, "method" to method, "user" to user)
 
     companion object {
-        const val KEY = "RequestAttributes"
-
         fun fromExchange(exchange: ServerWebExchange) = RequestAttributes(
             id = UUID.randomUUID().toString(),
             path = exchange.request.path.toString(),
@@ -47,19 +44,11 @@ data class RequestAttributes(
     }
 }
 
-suspend inline fun runWithLoggingContext(
-    request: ServerRequest,
-    crossinline handler: suspend (ServerRequest) -> ServerResponse
-): ServerResponse {
+suspend fun withLoggingCtx(unused: ServerRequest): CoroutineContext {
     /* Coroutine context */
-    val coroutineContext = request.exchange().attributes[CoWebFilter.COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
     val requestAttributesCoroutineContext = coroutineContext[RequestAttributesCoroutineContext]!!
 
-    /* Exchange attribute */
-    val requestAttributes = request.exchange().attributes[RequestAttributes.KEY] as RequestAttributes
-
-    return withLogContext(
-        "requestIdAttr" to requestAttributes.id,
-        "requestIdCtx" to requestAttributesCoroutineContext.requestAttributes.id
-    ) { handler(request) }
+    return logContext(
+        "id" to requestAttributesCoroutineContext.requestAttributes.id
+    )
 }

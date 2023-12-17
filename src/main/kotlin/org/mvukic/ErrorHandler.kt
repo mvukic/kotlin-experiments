@@ -36,22 +36,16 @@ class ErrorHandler : ErrorWebExceptionHandler, Klogging {
 
     override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> {
 
-        /* Coroutine context */
+        /* Get coroutine context */
         val coroutineContext = exchange.attributes[CoWebFilter.COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
+        /* Get request attribute coroutine context */
         val requestAttributesCoroutineContext = coroutineContext[RequestAttributesCoroutineContext]!!
+        /* Get request attribute */
+        val requestAttributes = requestAttributesCoroutineContext.requestAttributes
 
-
-        val log1 = mono {
+        /* Create dummy Mono object */
+        val log = mono {
             withLogContext("requestId" to requestAttributesCoroutineContext.requestAttributes.id) {
-                logger.error(ex, "ERROR")
-            }
-        }
-
-        /* Exchange attribute */
-        val requestAttributes = exchange.attributes[RequestAttributes.KEY] as RequestAttributes
-
-        val log2 = mono {
-            withLogContext("requestId" to requestAttributes.id) {
                 logger.error(ex, "ERROR")
             }
         }
@@ -62,7 +56,7 @@ class ErrorHandler : ErrorWebExceptionHandler, Klogging {
 
 
         val dataBuffer = exchange.response.bufferFactory()
-        return log1.then(log2).then(exchange.response.writeWith(dataBuffer.wrap(error).toMono()))
+        return log.then(exchange.response.writeWith(dataBuffer.wrap(error).toMono()))
     }
 
 }
