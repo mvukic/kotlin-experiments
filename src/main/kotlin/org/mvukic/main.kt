@@ -6,9 +6,14 @@ import io.klogging.context.Context
 import io.klogging.events.LogEvent
 import io.klogging.rendering.*
 import io.klogging.sending.STDOUT
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
+import org.jetbrains.annotations.BlockingExecutor
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.cache.annotation.EnableCaching
+import java.util.concurrent.Executors
 
 
 // https://github.com/spring-projects/spring-framework/issues/27522
@@ -54,3 +59,6 @@ private fun getEnv(): String {
     val env = System.getProperty("spring.profiles.active", "local")
     return if (env in envs) env else "local"
 }
+
+val Dispatchers.LOOM: @BlockingExecutor CoroutineDispatcher
+    get() = Executors.newVirtualThreadPerTaskExecutor().asCoroutineDispatcher()
