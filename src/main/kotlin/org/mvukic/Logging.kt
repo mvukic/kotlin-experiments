@@ -16,7 +16,6 @@ object WebFilterOrders {
 }
 
 class RequestAttributesCoroutineContext(val requestAttributes: RequestAttributes) : CoroutineContext.Element {
-
     override val key: CoroutineContext.Key<RequestAttributesCoroutineContext> = Key
 
     companion object Key : CoroutineContext.Key<RequestAttributesCoroutineContext>
@@ -30,7 +29,9 @@ data class RequestAttributes(
     var user: String?
 ) {
 
-    fun getLogContext() = arrayOf("requestId" to id, "path" to path, "method" to method, "user" to user)
+    fun getStartRequestLogContext() = arrayOf("id" to id, "path" to path, "method" to method, "user" to user)
+    fun getEndRequestLogContext() = arrayOf("id" to id, "user" to user)
+    fun getSimpleLogContext() = arrayOf("id" to id)
 
     companion object {
         fun fromExchange(exchange: ServerWebExchange) = RequestAttributes(
@@ -45,10 +46,10 @@ data class RequestAttributes(
 }
 
 suspend fun withLoggingCtx(unused: ServerRequest): CoroutineContext {
-    /* Coroutine context */
+    /* Get request attribute coroutine context */
     val requestAttributesCoroutineContext = coroutineContext[RequestAttributesCoroutineContext]!!
+    /* Get request attribute */
+    val requestAttributes = requestAttributesCoroutineContext.requestAttributes
 
-    return logContext(
-        "id" to requestAttributesCoroutineContext.requestAttributes.id
-    )
+    return logContext(*requestAttributes.getSimpleLogContext())
 }

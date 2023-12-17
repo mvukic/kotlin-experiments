@@ -22,7 +22,7 @@ class RequestStartFilter : CoWebFilter(), Klogging {
         val requestAttributesCoroutineContext = RequestAttributesCoroutineContext(requestAttributes)
 
         withContext(requestAttributesCoroutineContext) {
-            withLogContext(*requestAttributes.getLogContext()) {
+            withLogContext(*requestAttributes.getStartRequestLogContext()) {
                 logger.info("START")
                 chain.filter(exchange)
             }
@@ -36,11 +36,13 @@ class RequestEndFilter : CoWebFilter(), Klogging {
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
         /* Get coroutine context */
-        val coroutineContext = exchange.attributes[CoWebFilter.COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
+        val coroutineContext = exchange.attributes[COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
         /* Get request attribute coroutine context */
         val requestAttributesCoroutineContext = coroutineContext[RequestAttributesCoroutineContext]!!
+        /* Get request attribute */
+        val requestAttributes = requestAttributesCoroutineContext.requestAttributes
 
-        withLogContext("id" to requestAttributesCoroutineContext.requestAttributes.id) {
+        withLogContext(*requestAttributes.getEndRequestLogContext()) {
             logger.info("END")
             chain.filter(exchange)
         }
