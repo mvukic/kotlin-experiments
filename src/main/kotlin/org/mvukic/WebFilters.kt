@@ -22,7 +22,7 @@ class RequestStartFilter : CoWebFilter(), Klogging {
         val requestAttributesCoroutineContext = RequestAttributesCoroutineContext(requestAttributes)
 
         withContext(requestAttributesCoroutineContext) {
-            withLogContext(*requestAttributes.getStartRequestLogContext()) {
+            withLogContext(*requestAttributes.getSimpleLogContext()) {
                 logger.info("START")
                 chain.filter(exchange)
             }
