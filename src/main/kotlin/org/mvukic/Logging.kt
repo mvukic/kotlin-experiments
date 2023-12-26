@@ -29,7 +29,6 @@ data class RequestAttributes(
     var user: String?
 ) {
 
-    fun getStartRequestLogContext() = arrayOf("id" to id, "path" to path, "method" to method, "user" to user)
     fun getEndRequestLogContext() = arrayOf("id" to id, "user" to user)
     fun getSimpleLogContext() = arrayOf("id" to id)
 

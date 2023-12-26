@@ -35,7 +35,6 @@ data class ErrorResponse(
 class ErrorHandler : ErrorWebExceptionHandler, Klogging {
 
     override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> {
-
         /* Get coroutine context */
         val coroutineContext = exchange.attributes[CoWebFilter.COROUTINE_CONTEXT_ATTRIBUTE] as CoroutineContext
         /* Get request attribute coroutine context */
