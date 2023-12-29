@@ -30,10 +30,10 @@ configurations {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation(kotlinx("datetime:0.4.1"))
+    implementation(kotlinx("datetime:0.5.0"))
     implementation(kotlinx("serialization-json:1.6.2"))
-    implementation(kotlinx("coroutines-core:1.8.0-RC"))
-    implementation(kotlinx("coroutines-reactor:1.8.0-RC"))
+    implementation(kotlinx("coroutines-core:1.8.0-RC2"))
+    implementation(kotlinx("coroutines-reactor:1.8.0-RC2"))
 
     implementation("io.klogging:klogging-spring-boot-starter:0.5.7")
     implementation("org.springframework.boot:spring-boot-starter-cache")
@@ -50,7 +50,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.5"
+        version = "8.6-rc-1"
     }
 
     compileKotlin {
