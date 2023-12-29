@@ -21,6 +21,10 @@ class RouterHandler(private val api: ApiService) {
         return ServerResponse.ok().bodyValueAndAwait(response ?: "")
     }
 
+    suspend fun free(request: ServerRequest): ServerResponse {
+        return ServerResponse.ok().bodyValueAndAwait("No auth")
+    }
+
     suspend fun error(request: ServerRequest): ServerResponse {
         error("some error")
     }

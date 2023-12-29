@@ -1,4 +1,4 @@
-package org.mvukic
+package org.mvukic.logging
 
 import io.klogging.context.logContext
 import org.springframework.core.Ordered
@@ -29,8 +29,8 @@ data class RequestAttributes(
     var user: String?
 ) {
 
-    fun getEndRequestLogContext() = arrayOf("id" to id, "user" to user)
-    fun getSimpleLogContext() = arrayOf("id" to id)
+    fun getRequestEndLogContext() = arrayOf("id" to id, "user" to user)
+    fun getIdLogContext() = arrayOf("id" to id)
 
     companion object {
         fun fromExchange(exchange: ServerWebExchange) = RequestAttributes(
@@ -50,5 +50,5 @@ suspend fun withLoggingCtx(unused: ServerRequest): CoroutineContext {
     /* Get request attribute */
     val requestAttributes = requestAttributesCoroutineContext.requestAttributes
 
-    return logContext(*requestAttributes.getSimpleLogContext())
+    return logContext(*requestAttributes.getIdLogContext())
 }

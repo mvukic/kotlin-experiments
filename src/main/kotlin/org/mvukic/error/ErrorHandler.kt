@@ -1,4 +1,4 @@
-package org.mvukic
+package org.mvukic.error
 
 import io.klogging.Klogging
 import io.klogging.context.withLogContext
@@ -7,6 +7,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.mvukic.logging.RequestAttributesCoroutineContext
+import org.mvukic.logging.WebFilterOrders
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order

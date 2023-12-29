@@ -1,34 +1,15 @@
-package org.mvukic
+package org.mvukic.filter
 
 import io.klogging.Klogging
 import io.klogging.context.withLogContext
-import kotlinx.coroutines.withContext
+import org.mvukic.logging.RequestAttributesCoroutineContext
+import org.mvukic.logging.WebFilterOrders
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.web.server.CoWebFilter
 import org.springframework.web.server.CoWebFilterChain
 import org.springframework.web.server.ServerWebExchange
 import kotlin.coroutines.CoroutineContext
-
-
-@Component
-@Order(WebFilterOrders.START)
-class RequestStartFilter : CoWebFilter(), Klogging {
-
-    override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
-        // Create request attributes
-        val requestAttributes = RequestAttributes.fromExchange(exchange)
-        // Create request attributes coroutine context
-        val requestAttributesCoroutineContext = RequestAttributesCoroutineContext(requestAttributes)
-
-        withContext(requestAttributesCoroutineContext) {
-            withLogContext(*requestAttributes.getSimpleLogContext()) {
-                logger.info("START")
-                chain.filter(exchange)
-            }
-        }
-    }
-}
 
 @Component
 @Order(WebFilterOrders.END)
@@ -42,7 +23,7 @@ class RequestEndFilter : CoWebFilter(), Klogging {
         /* Get request attribute */
         val requestAttributes = requestAttributesCoroutineContext.requestAttributes
 
-        withLogContext(*requestAttributes.getEndRequestLogContext()) {
+        withLogContext(*requestAttributes.getRequestEndLogContext()) {
             logger.info("END")
             chain.filter(exchange)
         }

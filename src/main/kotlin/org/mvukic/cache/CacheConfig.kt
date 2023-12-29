@@ -1,4 +1,4 @@
-package org.mvukic
+package org.mvukic.cache
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import org.springframework.cache.annotation.EnableCaching
