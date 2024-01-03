@@ -46,7 +46,7 @@ class ErrorHandler : ErrorWebExceptionHandler, Klogging {
 
         /* Create dummy Mono object */
         val log = mono {
-            withLogContext("requestId" to requestAttributesCoroutineContext.requestAttributes.id) {
+            withLogContext(*requestAttributes.getIdLogContext()) {
                 logger.error(ex, "ERROR")
             }
         }

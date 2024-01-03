@@ -29,7 +29,7 @@ data class RequestAttributes(
     var user: String?
 ) {
 
-    fun getRequestEndLogContext() = arrayOf("id" to id, "user" to user)
+    fun getIdAndUserLogContext() = arrayOf("id" to id, "user" to user)
     fun getIdLogContext() = arrayOf("id" to id)
 
     companion object {

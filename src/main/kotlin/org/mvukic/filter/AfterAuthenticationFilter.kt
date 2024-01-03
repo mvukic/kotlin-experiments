@@ -2,18 +2,18 @@ package org.mvukic.filter
 
 import io.klogging.Klogging
 import io.klogging.context.withLogContext
+import kotlinx.coroutines.reactor.awaitSingleOrNull
+import kotlinx.coroutines.withContext
 import org.mvukic.logging.RequestAttributesCoroutineContext
-import org.mvukic.logging.WebFilterOrders
-import org.springframework.core.annotation.Order
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.server.CoWebFilter
 import org.springframework.web.server.CoWebFilterChain
 import org.springframework.web.server.ServerWebExchange
 import kotlin.coroutines.CoroutineContext
 
-@Component
-@Order(WebFilterOrders.END)
-class RequestEndFilter : CoWebFilter(), Klogging {
+
+class AfterAuthenticationFilter : CoWebFilter(), Klogging {
 
     override suspend fun filter(exchange: ServerWebExchange, chain: CoWebFilterChain) {
         /* Get coroutine context */
@@ -23,9 +23,16 @@ class RequestEndFilter : CoWebFilter(), Klogging {
         /* Get request attribute */
         val requestAttributes = requestAttributesCoroutineContext.requestAttributes
 
-        withLogContext(*requestAttributes.getIdAndUserLogContext()) {
-            logger.info("END")
-            chain.filter(exchange)
+        // Get user and add it to request attributes object
+        val securityContext = ReactiveSecurityContextHolder.getContext().awaitSingleOrNull()
+        val authentication = securityContext?.authentication
+        requestAttributes.user = authentication?.credentials.toString()
+
+        withContext(requestAttributesCoroutineContext) {
+            withLogContext(*requestAttributes.getIdAndUserLogContext()) {
+                logger.info("AfterAuthenticationFilter:filter")
+                chain.filter(exchange)
+            }
         }
     }
 }

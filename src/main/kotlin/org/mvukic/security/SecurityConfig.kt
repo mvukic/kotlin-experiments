@@ -1,5 +1,6 @@
 package org.mvukic.security
 
+import org.mvukic.filter.AfterAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
@@ -31,6 +32,7 @@ class SecurityConfiguration {
                     .anyExchange().authenticated()
             }
             .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+            .addFilterAfter(AfterAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
             .csrf { it.disable() }
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
