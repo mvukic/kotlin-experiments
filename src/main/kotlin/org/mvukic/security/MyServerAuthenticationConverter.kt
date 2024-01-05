@@ -12,9 +12,13 @@ import reactor.core.publisher.Mono
 class MyServerAuthenticationConverter : ServerAuthenticationConverter, NoCoLogging {
     override fun convert(exchange: ServerWebExchange): Mono<Authentication> {
         return Mono.justOrEmpty(exchange)
-            .flatMap { Mono.justOrEmpty(exchange.request.headers.getOrEmpty("x-auth").firstOrNull() ?: "") }
+            .flatMap { getHeader(it) }
             .filter { it.isNotEmpty() }
             .map { it }
             .map { UsernamePasswordAuthenticationToken(it, it) }
     }
+}
+
+fun getHeader(exchange: ServerWebExchange): Mono<String> {
+    return Mono.justOrEmpty(exchange.request.headers.getOrEmpty("x-auth").firstOrNull())
 }

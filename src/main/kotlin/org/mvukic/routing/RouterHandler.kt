@@ -1,5 +1,6 @@
 package org.mvukic.routing
 
+import org.mvukic.model.MyResponse
 import org.mvukic.service.ApiService
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -22,7 +23,7 @@ class RouterHandler(private val api: ApiService) {
     }
 
     suspend fun free(request: ServerRequest): ServerResponse {
-        return ServerResponse.ok().bodyValueAndAwait("No auth")
+        return ServerResponse.ok().bodyValueAndAwait(MyResponse("no auth required"))
     }
 
     suspend fun error(request: ServerRequest): ServerResponse {

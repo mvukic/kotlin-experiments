@@ -51,7 +51,8 @@ class ErrorHandler : ErrorWebExceptionHandler, Klogging {
             }
         }
 
-        val error = Json.encodeToString(ErrorResponse("error", requestAttributes.id)).encodeToByteArray()
+        val message = ex.message ?: ex.cause?.message ?: "Error ??"
+        val error = Json.encodeToString(ErrorResponse(message, requestAttributes.id)).encodeToByteArray()
         exchange.response.headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         exchange.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
 
