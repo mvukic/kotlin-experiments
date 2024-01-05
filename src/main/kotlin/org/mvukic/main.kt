@@ -16,8 +16,7 @@ import org.springframework.cache.annotation.EnableCaching
 import java.util.concurrent.Executors
 
 
-// https://github.com/spring-projects/spring-framework/issues/27522
-// https://github.com/sdeleuze/spring-framework/commit/gh-26977
+// https://github.com/sdeleuze/spring-framework/commits?author=sdeleuze
 @SpringBootApplication
 @EnableCaching
 class SpringBootApp

@@ -14,7 +14,6 @@ class MyServerAuthenticationConverter : ServerAuthenticationConverter, NoCoLoggi
         return Mono.justOrEmpty(exchange)
             .flatMap { getHeader(it) }
             .filter { it.isNotEmpty() }
-            .map { it }
             .map { UsernamePasswordAuthenticationToken(it, it) }
     }
 }
