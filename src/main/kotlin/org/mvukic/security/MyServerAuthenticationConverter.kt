@@ -11,7 +11,6 @@ import reactor.core.publisher.Mono
 @Component
 class MyServerAuthenticationConverter : ServerAuthenticationConverter, NoCoLogging {
     override fun convert(exchange: ServerWebExchange): Mono<Authentication> {
-        logger.info("MyServerAuthenticationConverter:convert")
         return Mono.justOrEmpty(exchange)
             .flatMap { Mono.justOrEmpty(exchange.request.headers.getOrEmpty("x-auth").firstOrNull() ?: "") }
             .filter { it.isNotEmpty() }

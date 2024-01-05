@@ -6,7 +6,6 @@ import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.mvukic.logging.RequestAttributesCoroutineContext
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
-import org.springframework.stereotype.Component
 import org.springframework.web.server.CoWebFilter
 import org.springframework.web.server.CoWebFilterChain
 import org.springframework.web.server.ServerWebExchange
@@ -30,7 +29,6 @@ class AfterAuthenticationFilter : CoWebFilter(), Klogging {
 
         withContext(requestAttributesCoroutineContext) {
             withLogContext(*requestAttributes.getIdAndUserLogContext()) {
-                logger.info("AfterAuthenticationFilter:filter")
                 chain.filter(exchange)
             }
         }

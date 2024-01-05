@@ -32,6 +32,12 @@ data class RequestAttributes(
     fun getIdAndUserLogContext() = arrayOf("id" to id, "user" to user)
     fun getIdLogContext() = arrayOf("id" to id)
 
+    fun getLogContext() = arrayOf(
+        "id" to id,
+        "method" to method,
+        "path" to path
+    )
+
     companion object {
         fun fromExchange(exchange: ServerWebExchange) = RequestAttributes(
             id = UUID.randomUUID().toString(),
@@ -50,5 +56,5 @@ suspend fun withLoggingCtx(unused: ServerRequest): CoroutineContext {
     /* Get request attribute */
     val requestAttributes = requestAttributesCoroutineContext.requestAttributes
 
-    return logContext(*requestAttributes.getIdLogContext())
+    return logContext(*requestAttributes.getIdAndUserLogContext())
 }

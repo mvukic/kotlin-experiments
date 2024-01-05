@@ -25,7 +25,8 @@ class RequestEndFilter : CoWebFilter(), Klogging {
 
         withLogContext(*requestAttributes.getIdAndUserLogContext()) {
             logger.info("END")
-            chain.filter(exchange)
         }
+
+        chain.filter(exchange)
     }
 }

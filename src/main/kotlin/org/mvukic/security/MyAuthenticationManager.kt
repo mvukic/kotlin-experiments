@@ -11,7 +11,6 @@ import reactor.core.publisher.Mono
 @Component
 class MyAuthenticationManager : ReactiveAuthenticationManager, NoCoLogging {
     override fun authenticate(authentication: Authentication): Mono<Authentication> {
-        logger.info("MyAuthenticationManager:authenticate")
         return Mono.just(authentication)
             .map { mapOrError(it.credentials as String) }
             .onErrorResume { Mono.empty() }

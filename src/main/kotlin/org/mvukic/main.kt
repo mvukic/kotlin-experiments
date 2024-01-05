@@ -57,7 +57,7 @@ private fun configureLogging() {
 private fun getEnv(): String {
     val envs = listOf("local", "dev", "test", "stage", "prod")
     val env = System.getProperty("spring.profiles.active", "local")
-    return if (env in envs) env else "local"
+    return if (env in envs) env else error("Unknown environment: $env")
 }
 
 val Dispatchers.LOOM: @BlockingExecutor CoroutineDispatcher
