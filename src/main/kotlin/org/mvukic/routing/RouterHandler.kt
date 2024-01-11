@@ -1,5 +1,6 @@
 package org.mvukic.routing
 
+import kotlinx.coroutines.delay
 import org.mvukic.model.MyResponse
 import org.mvukic.service.ApiService
 import org.springframework.stereotype.Service
@@ -23,6 +24,7 @@ class RouterHandler(private val api: ApiService) {
     }
 
     suspend fun free(request: ServerRequest): ServerResponse {
+        delay(2000)
         return ServerResponse.ok().bodyValueAndAwait(MyResponse("no auth required"))
     }
 

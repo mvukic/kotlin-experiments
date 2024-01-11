@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 
 @Service
-class ApiService: Klogging {
+class ApiService : Klogging {
 
     suspend fun api1(id: String): String {
         val link = "https://jsonplaceholder.typicode.com/todos/$id"

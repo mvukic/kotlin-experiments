@@ -23,10 +23,10 @@ class RequestEndFilter : CoWebFilter(), Klogging {
         /* Get request attribute */
         val requestAttributes = requestAttributesCoroutineContext.requestAttributes
 
+        chain.filter(exchange)
+
         withLogContext(*requestAttributes.getIdAndUserLogContext()) {
             logger.info("END")
         }
-
-        chain.filter(exchange)
     }
 }
