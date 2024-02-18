@@ -35,18 +35,31 @@ dependencies {
     implementation(kotlinx("serialization-json:1.6.3"))
     implementation(kotlinx("coroutines-core:1.8.0"))
     implementation(kotlinx("coroutines-reactor:1.8.0"))
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
+    // Logging
     implementation("io.klogging:klogging-spring-boot-starter:0.5.10")
+
+    // Spring Boot Starter
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // Cache
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+    // Security
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-testcontainers")
 
-    implementation("org.springframework.boot:spring-boot-starter-data-neo4j")
+    // Testing
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.projectreactor:reactor-test")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:neo4j")
+    testImplementation("org.neo4j.driver:neo4j-java-driver:5.17.0")
+    implementation(kotlinx("coroutines-test:1.8.0"))
+    testImplementation("org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:1.0-alpha-13")
+
 }
 
 tasks {
