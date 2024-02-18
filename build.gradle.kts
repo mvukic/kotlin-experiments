@@ -1,12 +1,12 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.3.0-SNAPSHOT"
+    id("org.springframework.boot") version "3.3.0-M1"
     id("io.spring.dependency-management") version "1.1.4"
-    id("org.graalvm.buildtools.native") version "0.9.28"
-    kotlin("jvm") version "2.0.0-Beta2"
-    kotlin("plugin.spring") version "2.0.0-Beta2"
-    kotlin("plugin.serialization") version "2.0.0-Beta2"
+    id("org.graalvm.buildtools.native") version "0.10.0"
+    kotlin("jvm") version "2.0.0-Beta4"
+    kotlin("plugin.spring") version "2.0.0-Beta4"
+    kotlin("plugin.serialization") version "2.0.0-Beta4"
 }
 
 group = "org.mvukic"
@@ -32,11 +32,11 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation(kotlinx("datetime:0.5.0"))
-    implementation(kotlinx("serialization-json:1.6.2"))
-    implementation(kotlinx("coroutines-core:1.8.0-RC2"))
-    implementation(kotlinx("coroutines-reactor:1.8.0-RC2"))
+    implementation(kotlinx("serialization-json:1.6.3"))
+    implementation(kotlinx("coroutines-core:1.8.0"))
+    implementation(kotlinx("coroutines-reactor:1.8.0"))
 
-    implementation("io.klogging:klogging-spring-boot-starter:0.5.7")
+    implementation("io.klogging:klogging-spring-boot-starter:0.5.10")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
@@ -53,7 +53,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.6-rc-1"
+        version = "8.6"
     }
 
     compileKotlin {
