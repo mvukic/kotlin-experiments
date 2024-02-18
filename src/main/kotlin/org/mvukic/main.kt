@@ -27,10 +27,13 @@ fun main(args: Array<String>) {
 }
 
 private fun configureLogging() {
-    val renderCustom: RenderString = { e: LogEvent ->
-        val eventMap: MutableMap<String, Any?> = (mapOf("@t" to e.timestamp.toString()) + e.items).toMutableMap()
-        if (e.template != null) eventMap["@mt"] = e.template else eventMap["@m"] = e.message
-        serializeMap(eventMap)
+    val renderCustom: RenderString = object : RenderString {
+        override fun invoke(event: LogEvent): String {
+            val eventMap: MutableMap<String, Any?> =
+                (mapOf("@t" to event.timestamp.toString()) + event.items).toMutableMap()
+            if (event.template != null) eventMap["@mt"] = event.template else eventMap["@m"] = event.message
+            return serializeMap(eventMap)
+        }
     }
 
     val env = getEnv()
