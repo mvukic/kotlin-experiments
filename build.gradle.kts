@@ -31,14 +31,14 @@ configurations {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation(kotlinx("datetime:0.5.0"))
+    implementation(kotlinx("datetime:0.6.0-RC.2"))
     implementation(kotlinx("serialization-json:1.6.3"))
-    implementation(kotlinx("coroutines-core:1.8.0"))
-    implementation(kotlinx("coroutines-reactor:1.8.0"))
+    implementation(kotlinx("coroutines-core:1.8.1-Beta"))
+    implementation(kotlinx("coroutines-reactor:1.8.1-Beta"))
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
     // Logging
-    implementation("io.klogging:klogging-spring-boot-starter:0.5.10")
+    implementation("io.klogging:klogging-spring-boot-starter:0.5.11")
 
     // Spring Boot Starter
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -57,7 +57,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:neo4j")
     testImplementation("org.neo4j.driver:neo4j-java-driver:5.17.0")
-    implementation(kotlinx("coroutines-test:1.8.0"))
+    implementation(kotlinx("coroutines-test:1.8.1-Beta"))
     testImplementation("org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:1.0-alpha-13")
 
 }
@@ -68,7 +68,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.6"
+        version = "8.7-rc-3"
     }
 
     compileKotlin {

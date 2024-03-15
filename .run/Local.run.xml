@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Local" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="locale" />
+    <option name="ACTIVE_PROFILES" value="local" />
     <module name="kotlin-experiments.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="org.mvukic.SpringBootApp" />
     <method v="2">
