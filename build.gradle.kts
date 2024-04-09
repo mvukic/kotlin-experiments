@@ -4,9 +4,9 @@ plugins {
     id("org.springframework.boot") version "3.3.0-SNAPSHOT"
     id("io.spring.dependency-management") version "1.1.4"
     id("org.graalvm.buildtools.native") version "0.10.0"
-    kotlin("jvm") version "2.0.0-Beta4"
-    kotlin("plugin.spring") version "2.0.0-Beta4"
-    kotlin("plugin.serialization") version "2.0.0-Beta4"
+    kotlin("jvm") version "2.0.0-RC1"
+    kotlin("plugin.spring") version "2.0.0-RC1"
+    kotlin("plugin.serialization") version "2.0.0-RC1"
 }
 
 group = "org.mvukic"
@@ -68,7 +68,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.7-rc-3"
+        version = "8.7"
     }
 
     compileKotlin {
