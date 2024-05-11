@@ -68,12 +68,12 @@ tasks {
     }
 
     wrapper {
-        version = "8.7"
+        version = "8.8-rc-1"
     }
 
     compileKotlin {
         compilerOptions {
-            freeCompilerArgs = listOf("-Xjsr305=strict")
+            freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
             jvmTarget = JvmTarget.JVM_21
         }
     }

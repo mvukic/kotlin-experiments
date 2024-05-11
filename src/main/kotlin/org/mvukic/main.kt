@@ -64,3 +64,7 @@ private fun getEnv(): String {
 
 val Dispatchers.LOOM: @BlockingExecutor CoroutineDispatcher
     get() = Executors.newVirtualThreadPerTaskExecutor().asCoroutineDispatcher()
+
+
+context(Comparator<T>)
+infix operator fun <T> T.compareTo(other: T) = compare(this, other)
