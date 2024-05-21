@@ -4,16 +4,16 @@ plugins {
     id("org.springframework.boot") version "3.3.0-SNAPSHOT"
     id("io.spring.dependency-management") version "1.1.4"
     id("org.graalvm.buildtools.native") version "0.10.0"
-    kotlin("jvm") version "2.0.0-RC1"
-    kotlin("plugin.spring") version "2.0.0-RC1"
-    kotlin("plugin.serialization") version "2.0.0-RC1"
+    kotlin("jvm") version "2.0.0"
+    kotlin("plugin.spring") version "2.0.0"
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 group = "org.mvukic"
 version = "1.0-SNAPSHOT"
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(22)
 }
 
 repositories {
@@ -31,14 +31,14 @@ configurations {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation(kotlinx("datetime:0.6.0-RC.2"))
-    implementation(kotlinx("serialization-json:1.6.3"))
-    implementation(kotlinx("coroutines-core:1.8.1-Beta"))
-    implementation(kotlinx("coroutines-reactor:1.8.1-Beta"))
+    implementation(kotlinx("datetime:0.6.0"))
+    implementation(kotlinx("serialization-json:1.7.0-RC"))
+    implementation(kotlinx("coroutines-core:1.8.1"))
+    implementation(kotlinx("coroutines-reactor:1.8.1"))
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
     // Logging
-    implementation("io.klogging:klogging-spring-boot-starter:0.5.11")
+    implementation("io.klogging:klogging-spring-boot-starter:0.5.13")
 
     // Spring Boot Starter
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -56,10 +56,8 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:neo4j")
-    testImplementation("org.neo4j.driver:neo4j-java-driver:5.17.0")
-    implementation(kotlinx("coroutines-test:1.8.1-Beta"))
-    testImplementation("org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:1.0-alpha-13")
-
+    testImplementation("org.neo4j.driver:neo4j-java-driver:5.20.0")
+    implementation(kotlinx("coroutines-test:1.8.1"))
 }
 
 tasks {
@@ -74,7 +72,7 @@ tasks {
     compileKotlin {
         compilerOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
-            jvmTarget = JvmTarget.JVM_21
+            jvmTarget = JvmTarget.JVM_22
         }
     }
 }
