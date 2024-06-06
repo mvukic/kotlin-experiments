@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("org.springframework.boot") version "3.3.0-SNAPSHOT"
-    id("io.spring.dependency-management") version "1.1.4"
-    id("org.graalvm.buildtools.native") version "0.10.0"
+    id("io.spring.dependency-management") version "1.1.5"
+    id("org.graalvm.buildtools.native") version "0.10.2"
     kotlin("jvm") version "2.0.0"
     kotlin("plugin.spring") version "2.0.0"
     kotlin("plugin.serialization") version "2.0.0"
@@ -32,13 +32,13 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation(kotlinx("datetime:0.6.0"))
-    implementation(kotlinx("serialization-json:1.7.0-RC"))
-    implementation(kotlinx("coroutines-core:1.8.1"))
-    implementation(kotlinx("coroutines-reactor:1.8.1"))
+    implementation(kotlinx("serialization-json:1.7.0"))
+    implementation(kotlinx("coroutines-core:1.9.0-RC"))
+    implementation(kotlinx("coroutines-reactor:1.9.0-RC"))
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
     // Logging
-    implementation("io.klogging:klogging-spring-boot-starter:0.5.13")
+    implementation("io.klogging:klogging-spring-boot-starter:0.5.14")
 
     // Spring Boot Starter
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -56,8 +56,8 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:neo4j")
-    testImplementation("org.neo4j.driver:neo4j-java-driver:5.20.0")
-    implementation(kotlinx("coroutines-test:1.8.1"))
+    testImplementation("org.neo4j.driver:neo4j-java-driver:5.21.0")
+    implementation(kotlinx("coroutines-test:1.9.0-RC"))
 }
 
 tasks {
@@ -66,7 +66,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.8-rc-1"
+        version = "8.8"
     }
 
     compileKotlin {
