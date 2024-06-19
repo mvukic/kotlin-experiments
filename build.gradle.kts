@@ -1,12 +1,12 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.3.0-SNAPSHOT"
+    id("org.springframework.boot") version "3.3.0"
     id("io.spring.dependency-management") version "1.1.5"
     id("org.graalvm.buildtools.native") version "0.10.2"
-    kotlin("jvm") version "2.0.0"
-    kotlin("plugin.spring") version "2.0.0"
-    kotlin("plugin.serialization") version "2.0.0"
+    kotlin("jvm") version "2.0.20-Beta1"
+    kotlin("plugin.spring") version "2.0.20-Beta1"
+    kotlin("plugin.serialization") version "2.0.20-Beta1"
 }
 
 group = "org.mvukic"
