@@ -1,6 +1,7 @@
 package org.mvukic.routing
 
-import kotlinx.coroutines.delay
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 import org.mvukic.model.MyResponse
 import org.mvukic.service.ApiService
 import org.springframework.stereotype.Service
@@ -24,7 +25,8 @@ class RouterHandler(private val api: ApiService) {
     }
 
     suspend fun free(request: ServerRequest): ServerResponse {
-        delay(2000)
+        println(Json.encodeToString(ListSerializer(MyResponse.serializer()), listOf(MyResponse("free access"))))
+//        return ServerResponse.ok().bodyValueAndAwait(listOf(MyResponse("no auth required")))
         return ServerResponse.ok().bodyValueAndAwait(MyResponse("no auth required"))
     }
 

@@ -41,7 +41,9 @@ dependencies {
     implementation("io.klogging:klogging-spring-boot-starter:0.6.1")
 
     // Spring Boot Starter
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-webflux") {
+        exclude(module = "spring-boot-starter-json")
+    }
 
     // Cache
     implementation("org.springframework.boot:spring-boot-starter-cache")
