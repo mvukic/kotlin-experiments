@@ -42,7 +42,7 @@ private fun configureLogging() {
         sink("dev", RENDER_ISO8601, STDOUT)
         sink("test", renderCustom, STDOUT)
         sink("stage", RENDER_ECS, STDOUT)
-        sink("prod", RENDER_GELF, STDOUT)
+        sink("prod", RENDER_CLEF, STDOUT)
         logging {
             fromMinLevel(Level.INFO) {
                 toSink(env)
