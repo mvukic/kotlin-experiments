@@ -56,14 +56,10 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:neo4j")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.1")
+    testImplementation("org.testcontainers:neo4j:1.20.1")
     testImplementation("org.neo4j.driver:neo4j-java-driver:5.22.0")
     implementation(kotlinx("coroutines-test:1.9.0-RC"))
-}
-
-ext {
-    set("testcontainers.version", "1.20.1")
 }
 
 tasks {
