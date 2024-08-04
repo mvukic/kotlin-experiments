@@ -62,6 +62,10 @@ dependencies {
     implementation(kotlinx("coroutines-test:1.9.0-RC"))
 }
 
+ext {
+    set("testcontainers.version", "1.20.1")
+}
+
 tasks {
     test {
         useJUnitPlatform()
