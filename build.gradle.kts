@@ -1,12 +1,12 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.4.0-SNAPSHOT"
+    id("org.springframework.boot") version "3.4.0-M1"
     id("io.spring.dependency-management") version "1.1.6"
     id("org.graalvm.buildtools.native") version "0.10.2"
-    kotlin("jvm") version "2.0.20-RC"
-    kotlin("plugin.spring") version "2.0.20-RC"
-    kotlin("plugin.serialization") version "2.0.20-RC"
+    kotlin("jvm") version "2.0.20-RC2"
+    kotlin("plugin.spring") version "2.0.20-RC2"
+    kotlin("plugin.serialization") version "2.0.20-RC2"
 }
 
 group = "org.mvukic"
@@ -33,8 +33,8 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation(kotlinx("datetime:0.6.0"))
     implementation(kotlinx("serialization-json:1.7.1"))
-    implementation(kotlinx("coroutines-core:1.9.0-RC"))
-    implementation(kotlinx("coroutines-reactor:1.9.0-RC"))
+    implementation(kotlinx("coroutines-core:1.9.0-RC.2"))
+    implementation(kotlinx("coroutines-reactor:1.9.0-RC.2"))
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
     // Logging
@@ -59,7 +59,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.20.1")
     testImplementation("org.testcontainers:neo4j:1.20.1")
     testImplementation("org.neo4j.driver:neo4j-java-driver:5.22.0")
-    implementation(kotlinx("coroutines-test:1.9.0-RC"))
+    implementation(kotlinx("coroutines-test:1.9.0-RC.2"))
 }
 
 tasks {
@@ -68,7 +68,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.9"
+        version = "8.10"
     }
 
     compileKotlin {
