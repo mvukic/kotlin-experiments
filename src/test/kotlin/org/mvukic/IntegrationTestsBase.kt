@@ -9,7 +9,6 @@ import org.testcontainers.containers.Neo4jContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
-import org.wiremock.integrations.testcontainers.WireMockContainer
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
@@ -28,12 +27,6 @@ class IntegrationTestsBase : NoCoLogging {
             .withoutAuthentication()
 
         private val mockImage = DockerImageName.parse("wiremock/wiremock").withTag("2.35.0")
-
-        @JvmStatic
-        @Container
-        private val mock = WireMockContainer(mockImage)
-            .withReuse(true)
-            .withMappingFromJSON("test-api", "test-api.response.json")
 
 
         @JvmStatic
