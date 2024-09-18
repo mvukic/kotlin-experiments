@@ -5,8 +5,8 @@ plugins {
     id("io.spring.dependency-management") version "1.1.6"
     id("org.graalvm.buildtools.native") version "0.10.2"
     kotlin("jvm") version "2.1.0-Beta1"
-    kotlin("plugin.spring") version "2.0.20"
-    kotlin("plugin.serialization") version "2.0.20"
+    kotlin("plugin.spring") version "2.1.0-Beta1"
+    kotlin("plugin.serialization") version "2.1.0-Beta1"
 }
 
 group = "org.mvukic"
