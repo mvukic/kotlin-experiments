@@ -22,17 +22,15 @@ repositories {
     maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
-configurations {
-    all {
-        exclude("ch.qos.logback")
-    }
+configurations.all {
+    exclude("ch.qos.logback")
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation(kotlinx("datetime:0.6.1"))
-    implementation(kotlinx("serialization-json:1.7.2"))
+    implementation(kotlinx("serialization-json:1.7.3"))
     implementation(kotlinx("coroutines-core:1.9.0"))
     implementation(kotlinx("coroutines-reactor:1.9.0"))
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -53,19 +51,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     // Database
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    testImplementation("org.neo4j.driver:neo4j-java-driver:5.24.0")
 
     // Testing
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.testcontainers:junit-jupiter:1.20.1")
-    testImplementation("org.testcontainers:neo4j:1.20.1")
 
     implementation(kotlinx("coroutines-test:1.9.0"))
-    testImplementation("org.testcontainers:mongodb")
 }
 
 tasks {
@@ -74,7 +67,7 @@ tasks {
     }
 
     wrapper {
-        version = "8.10.1"
+        version = "8.10.2"
     }
 
     compileKotlin {
